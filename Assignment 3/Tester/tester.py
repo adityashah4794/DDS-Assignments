@@ -97,11 +97,11 @@ def deleteTables(ratingstablename, openconnection):
 if __name__ == '__main__':
     try:
         # Creating Database ddsassignment2
-        print "Creating Database named as ddsassignment2"
+        print "Creating Database named as ddsassignment3"
         createDB();
 
         # Getting connection to the database
-        print "Getting connection from the ddsassignment2 database"
+        print "Getting connection from the ddsassignment3 database"
         con = getOpenConnection();
 
         #Loading two tables ratings and movies

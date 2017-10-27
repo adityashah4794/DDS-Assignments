@@ -40,12 +40,11 @@ def ParallelSort (InputTable, SortingColumnName, OutputTable, openconnection):
 
     for i in range(NO_OF_THREADS):
         tblName = "range_part" + str(i)
-        temp = "CREATE TABLE " + tblName + " ( " + InputTableSchema[0][0] + " " + InputTableSchema[0][1] + ");"
+        temp = "CREATE TABLE " + tblName + " (" + InputTableSchema[0][0] + " " + InputTableSchema[0][1] + ");"
         cur.execute(temp)
         for each in range(1,len(InputTableSchema)):
             temp = "ALTER TABLE " + tblName + " ADD COLUMN " + InputTableSchema[each][0] + " " + InputTableSchema[each][1] + ";"
             cur.execute(temp)
-
     threads = [0,0,0,0,0]
     for i in range(NO_OF_THREADS):
         if i == 0:
@@ -61,12 +60,11 @@ def ParallelSort (InputTable, SortingColumnName, OutputTable, openconnection):
     for i in range(NO_OF_THREADS):
         threads[i].join()
 
-    temp = "CREATE TABLE " + OutputTable + " (" + InputTableSchema[0][0] + "," + InputTableSchema[0][1] + " );"
+    temp = "CREATE TABLE " + OutputTable + " (" + InputTableSchema[0][0] + " INTEGER);"
     cur.execute(temp)
     for each in range(1,len(InputTableSchema)):
             temp = "ALTER TABLE " + OutputTable + " ADD COLUMN " + InputTableSchema[each][0] + " " + InputTableSchema[each][1] + ";"
             cur.execute(temp)
-
     for i in range(NO_OF_THREADS):
         temp = "INSERT INTO " + OutputTable + " SELECT * FROM range_part" + str(i) + ";"
         cur.execute(temp)
@@ -81,9 +79,9 @@ def Sorted(InputTable,SortingColumnName,i,minvalue,maxvalue,openconnection):
     cur = openconnection.cursor()
     tblName = "range_part" + str(i)
     if i == 0:
-        temp = "INSERT INTO " + tblName + " SELECT * FROM " + InputTable + " WHERE " + SortingColumnName + " >= " + minvalue + " AND " + SortingColumnName + " <= " + maxvalue + " ORDER BY " + SortingColumnName + " ASC;"
+        temp = "INSERT INTO " + tblName + " SELECT * FROM " + InputTable + " WHERE " + SortingColumnName + " >= " + str(minvalue) + " AND " + SortingColumnName + " <= " + str(maxvalue) + " ORDER BY " + SortingColumnName + " ASC;"
     else:
-        temp = "INSERT INTO " + tblName + " SELECT * FROM " + InputTable + " WHERE " + SortingColumnName + " > " + minvalue + " AND " + SortingColumnName + " <= " + maxvalue + " ORDER BY " + SortingColumnName + " ASC;"      
+        temp = "INSERT INTO " + tblName + " SELECT * FROM " + InputTable + " WHERE " + SortingColumnName + " > " + str(minvalue) + " AND " + SortingColumnName + " <= " + str(maxvalue) + " ORDER BY " + SortingColumnName + " ASC;"      
     cur.execute(temp)
     return
 
@@ -94,19 +92,19 @@ def ParallelJoin (InputTable1, InputTable2, Table1JoinColumn, Table2JoinColumn, 
     cur = openconnection.cursor()
     temp = "SELECT MIN(" + Table1JoinColumn + ") FROM " + InputTable1 + ";"
     cur.execute(temp)
-    mintbl1 = float(cursor.fetchone()[0])
+    mintbl1 = float(cur.fetchone()[0])
 
     temp = "SELECT MIN(" + Table2JoinColumn + ") FROM " + InputTable2 + ";"
     cur.execute(temp)
-    mintbl2 = float(cursor.fetchone()[0])
+    mintbl2 = float(cur.fetchone()[0])
 
     temp = "SELECT MAX(" + Table1JoinColumn + ") FROM " + InputTable1 + ";"
     cur.execute(temp)
-    maxtbl1 = float(cursor.fetchone()[0])
+    maxtbl1 = float(cur.fetchone()[0])
 
     temp = "SELECT MAX(" + Table2JoinColumn + ") FROM " + InputTable2 + ";"
     cur.execute(temp)
-    maxtbl2 = float(cursor.fetchone()[0])
+    maxtbl2 = float(cur.fetchone()[0])
 
     maxtbl = max(maxtbl1,maxtbl2)
     mintbl = min(mintbl1,mintbl2)
@@ -120,7 +118,7 @@ def ParallelJoin (InputTable1, InputTable2, Table1JoinColumn, Table2JoinColumn, 
     cur.execute(temp)
     InputTableSchema2 = cur.fetchall()
 
-    temp = "CREATE TABLE " + OutputTable + " (" + InputTableSchema1[0][0] + "," + InputTableSchema2[0][1] + ");"
+    temp = "CREATE TABLE " + OutputTable + " (" + InputTableSchema1[0][0] + " INTEGER);"
     cur.execute(temp)
 
     for each in range(1,len(InputTableSchema1)):
@@ -136,11 +134,11 @@ def ParallelJoin (InputTable1, InputTable2, Table1JoinColumn, Table2JoinColumn, 
         if i == 0:
             minvalue = mintbl
             maxvalue = minvalue + interval
-            temp = "CREATE TABLE " + tblName + " AS SELECT * FROM " + InputTable1 + " WHERE " + Table1JoinColumn + " >= " + minvalue + " AND " + Table1JoinColumn + " <= " + maxvalue  + ";"
+            temp = "CREATE TABLE " + tblName + " AS SELECT * FROM " + InputTable1 + " WHERE " + Table1JoinColumn + " >= " + str(minvalue) + " AND " + Table1JoinColumn + " <= " + str(maxvalue)  + ";"
         else:
             minvalue = maxvalue
             maxvalue = minvalue + interval
-            temp = "CREATE TABLE " + tblName + " AS SELECT * FROM " + InputTable1 + " WHERE " + Table1JoinColumn + " > " + minvalue + " AND " + Table1JoinColumn + " <= " + maxvalue  + ";"
+            temp = "CREATE TABLE " + tblName + " AS SELECT * FROM " + InputTable1 + " WHERE " + Table1JoinColumn + " > " + str(minvalue) + " AND " + Table1JoinColumn + " <= " + str(maxvalue)  + ";"
         cur.execute(temp)
     
     for i in range(NO_OF_THREADS):
@@ -148,16 +146,16 @@ def ParallelJoin (InputTable1, InputTable2, Table1JoinColumn, Table2JoinColumn, 
         if i == 0:
             minvalue = mintbl
             maxvalue = minvalue + interval
-            temp = "CREATE TABLE " + tblName + " AS SELECT * FROM " + InputTable2 + " WHERE " + Table2JoinColumn + " >= " + minvalue + " AND " + Table2JoinColumn + " <= " + maxvalue + ";"
+            temp = "CREATE TABLE " + tblName + " AS SELECT * FROM " + InputTable2 + " WHERE " + Table2JoinColumn + " >= " + str(minvalue) + " AND " + Table2JoinColumn + " <= " + str(maxvalue) + ";"
         else:
             minvalue = maxvalue
             maxvalue = minvalue + interval
-            temp = "CREATE TABLE " + tblName + " AS SELECT * FROM " + InputTable2 + " WHERE " + Table2JoinColumn + " > " + minvalue + " AND " + Table2JoinColumn + " <= " + maxvalue + ";"
+            temp = "CREATE TABLE " + tblName + " AS SELECT * FROM " + InputTable2 + " WHERE " + Table2JoinColumn + " > " + str(minvalue) + " AND " + Table2JoinColumn + " <= " + str(maxvalue) + ";"
         cur.execute(temp)
 
     for i in range(NO_OF_THREADS):
         OutputTableRange = "outtable_range" + str(i)
-        temp = "CREATE TABLE " + OutputTableRange + " (" + InputTableSchema1[0][0] + "," + InputTableSchema2[0][1] + ");"
+        temp = "CREATE TABLE " + OutputTableRange + " (" + InputTableSchema1[0][0] + " INTEGER);"
         cur.execute(temp)
 
         for each in range(1,len(InputTableSchema1)):
@@ -175,11 +173,11 @@ def ParallelJoin (InputTable1, InputTable2, Table1JoinColumn, Table2JoinColumn, 
 
     for i in range(NO_OF_THREADS):
         threads[i].join()
-
+    print "threading done"
     for i in range(NO_OF_THREADS):
         temp = "INSERT INTO " + OutputTable + " SELECT * FROM outtable_range" + str(i) + ";"
         cur.execute(temp)
-
+    print " Outtabel ready and done"
     for i in range(NO_OF_THREADS):
         temp = "DROP TABEL IF EXISTS inputtable1_" + str(i) + ";" 
         temp1 = "DROP TABEL IF EXISTS inputtable2_" + str(i) + ";" 
@@ -187,12 +185,13 @@ def ParallelJoin (InputTable1, InputTable2, Table1JoinColumn, Table2JoinColumn, 
         cur.execute(temp)   
         cur.execute(temp1) 
         cur.execute(temp2)           
-
+    print "all done"
     openconnection.commit()
 
 def Join(Table1JoinColumn,Table2JoinColumn,openconnection,i):
     cur = openconnection.cursor()
-    temp = "INSERT INTO outtable_range" + str(i) + " SELECT * FROM inputtable1_" + str(i) + " INNER JOIN inputtable2_" + str(i) + " ON inputtable1_" + str(i) + "." + str(i) + " = inputtable2_" + str(i) + "." + str(i)  +";"
+    temp = """INSERT INTO outtable_range""" + str(i) + """ SELECT * FROM inputtable1_""" + str(i) + """ INNER JOIN inputtable2_""" + str(i) +""" ON "inputtable1_""" + str(i) + """.""" + str(Table1JoinColumn).lower() + """" = "inputtable2_""" + str(i) + """.""" + str(Table2JoinColumn).lower() + """";"""
+    print temp
     cur.execute(temp)
     return 
 
