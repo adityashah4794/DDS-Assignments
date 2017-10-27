@@ -173,25 +173,24 @@ def ParallelJoin (InputTable1, InputTable2, Table1JoinColumn, Table2JoinColumn, 
 
     for i in range(NO_OF_THREADS):
         threads[i].join()
-    print "threading done"
+
     for i in range(NO_OF_THREADS):
         temp = "INSERT INTO " + OutputTable + " SELECT * FROM outtable_range" + str(i) + ";"
         cur.execute(temp)
-    print " Outtabel ready and done"
+
     for i in range(NO_OF_THREADS):
-        temp = "DROP TABEL IF EXISTS inputtable1_" + str(i) + ";" 
-        temp1 = "DROP TABEL IF EXISTS inputtable2_" + str(i) + ";" 
-        temp2 = "DROP TABEL IF EXISTS outtable_range" + str(i) + ";" 
+        temp = "DROP TABLE IF EXISTS inputtable1_" + str(i) + ";" 
+        temp1 = "DROP TABLE IF EXISTS inputtable2_" + str(i) + ";" 
+        temp2 = "DROP TABLE IF EXISTS outtable_range" + str(i) + ";" 
         cur.execute(temp)   
         cur.execute(temp1) 
-        cur.execute(temp2)           
-    print "all done"
+        cur.execute(temp2) 
+
     openconnection.commit()
 
 def Join(Table1JoinColumn,Table2JoinColumn,openconnection,i):
     cur = openconnection.cursor()
-    temp = """INSERT INTO outtable_range""" + str(i) + """ SELECT * FROM inputtable1_""" + str(i) + """ INNER JOIN inputtable2_""" + str(i) +""" ON "inputtable1_""" + str(i) + """.""" + str(Table1JoinColumn).lower() + """" = "inputtable2_""" + str(i) + """.""" + str(Table2JoinColumn).lower() + """";"""
-    print temp
+    temp = """INSERT INTO outtable_range""" + str(i) + """ SELECT * FROM inputtable1_""" + str(i) + """ INNER JOIN inputtable2_""" + str(i) +""" ON inputtable1_""" + str(i) + """.""" + str(Table1JoinColumn).lower() + """ = inputtable2_""" + str(i) + """.""" + str(Table2JoinColumn).lower() + """;"""
     cur.execute(temp)
     return 
 
