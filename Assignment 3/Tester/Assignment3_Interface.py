@@ -10,12 +10,12 @@ import threading
 
 ##################### This needs to changed based on what kind of table we want to sort. ##################
 ##################### To know how to change this, see Assignment 3 Instructions carefully #################
-FIRST_TABLE_NAME = 'ratings'
-SECOND_TABLE_NAME = 'movies'
-SORT_COLUMN_NAME_FIRST_TABLE = 'rating'
-SORT_COLUMN_NAME_SECOND_TABLE = 'movieid1'
-JOIN_COLUMN_NAME_FIRST_TABLE = 'movieid'
-JOIN_COLUMN_NAME_SECOND_TABLE = 'movieid1'
+FIRST_TABLE_NAME = 'table1'
+SECOND_TABLE_NAME = 'table2'
+SORT_COLUMN_NAME_FIRST_TABLE = 'column1'
+SORT_COLUMN_NAME_SECOND_TABLE = 'column2'
+JOIN_COLUMN_NAME_FIRST_TABLE = 'column1'
+JOIN_COLUMN_NAME_SECOND_TABLE = 'column2'
 ##########################################################################################################
 NO_OF_THREADS = 5
 
