@@ -1,4 +1,4 @@
-							Approach
+						Approach
 
 Mapper: Reads from the file loaded into HDFS line by line and creates a key-value pair using the integer field and the tuple
 
