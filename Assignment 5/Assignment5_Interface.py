@@ -59,4 +59,5 @@ def FindBusinessBasedOnLocation(categoriesToSearch, myLocation, maxDistance, sav
         result.write("\n")
     
     result.close()
+    collection.drop()
     #pass
