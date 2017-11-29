@@ -36,7 +36,7 @@ def FindBusinessBasedOnCity(cityToSearch, saveLocation1, collection):
     result = open(saveLocation1,'w')
     for each in output:
         each["full_address"] = each["full_address"].replace("\n",", ")
-        result.write(each["name"].encode('utf-8').encode('string_escape')+"$"+each["full_address"].encode('utf-8').encode('string_escape')+"$"+each["city"].encode('utf-8').encode('string_escape')+"$"+each["state"].encode('utf-8').encode('string_escape'))
+        result.write(each["name"].encode('utf-8').encode('string_escape').upper()+"$"+each["full_address"].encode('utf-8').encode('string_escape').upper()+"$"+each["city"].encode('utf-8').encode('string_escape').upper()+"$"+each["state"].encode('utf-8').encode('string_escape').upper())
         result.write("\n")
     result.close()
     #pass
@@ -52,7 +52,7 @@ def FindBusinessBasedOnLocation(categoriesToSearch, myLocation, maxDistance, sav
         lat = each.get("latitude")
         lon = each.get("longitude")
         if maxDistance >= distance(float(latitude),float(longitude),float(lat),float(lon)):
-                tempList.append(each["name"].encode('utf-8'))
+                tempList.append(each["name"].encode('utf-8').upper())
 
     for each in tempList:
         result.write(each)
